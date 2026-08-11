@@ -1,0 +1,27 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "planwright-marketplace",
+  "owner": {
+    "name": "sshah"
+  },
+  "metadata": {
+    "description": "Story-first planning skills for Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "planwright",
+      "source": "./",
+      "description": "Allocate user stories with observable acceptance criteria, then plan against them: story-grouped tasks, per-task AC tags, and a Definition of Done per story.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "workflow",
+      "keywords": [
+        "planning",
+        "user-stories",
+        "acceptance-criteria",
+        "definition-of-done"
+      ]
+    }
+  ]
+}

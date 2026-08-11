@@ -1,0 +1,87 @@
+# .planwright.yml — planwright project configuration.
+#
+# Copy this file to the root of your repository as `.planwright.yml` and edit it.
+# Every key is optional. Whatever you leave out, the skills fall back to the
+# default noted beside it AND state the assumption in the plan they write, so an
+# omission is always visible in the output rather than silently applied.
+
+# ---------------------------------------------------------------------------
+# Where documents live
+# ---------------------------------------------------------------------------
+backlog:
+  # Per-epic backlog file. {slug} is replaced with the epic's slug from the
+  # `epics` table below. Used only when that epic's folder already exists.
+  # Default: docs/epic/{slug}/user-stories.md
+  epic_path: docs/epic/{slug}/user-stories.md
+
+  # Stories whose epic has no folder yet land here.
+  # Default: docs/user-stories.md
+  fallback: docs/user-stories.md
+
+# Where design specs are written. Default: docs/specs/
+specs: docs/specs/
+
+# Where implementation plans are written. Default: docs/plans/
+plans: docs/plans/
+
+# ---------------------------------------------------------------------------
+# Vocabulary
+# ---------------------------------------------------------------------------
+# The complete set of actors a story may be written for. A story whose persona
+# is not on this list is a defect: add the persona here first, deliberately.
+# No default — with this key absent, the skill asks rather than inventing one.
+personas: [Recruiter, Candidate, Agent, Employer, TenantAdmin, PlatformAdmin]
+
+# Epic number -> theme and folder slug. Story IDs are US-<epic number>.<n>, so
+# the key here supplies the `8` in US-8.22. Slugs are `e<n>-<theme>` in
+# kebab-case and fill the {slug} above.
+# No default — with this key absent, the skill asks which epic a story belongs to.
+epics:
+  E0: { theme: Platform foundation, slug: e0-platform }
+  E8: { theme: Comms & notifications, slug: e8-comms }
+
+# Architectural layers. A story touching two or more of these fires the
+# integration-test requirement.
+# Default: the list shown here.
+layers: [http, service, data-access, worker, external-adapter, authorization]
+
+# ---------------------------------------------------------------------------
+# Definition of Done
+# ---------------------------------------------------------------------------
+# Any requirement left unconfigured is written into the plan as "not configured
+# — skipped". It is never silently dropped.
+definition_of_done:
+  # 1. Unit tests — fires on any task with branching logic, a pure function,
+  #    a validator, or a projection.
+  unit:
+    command: pnpm test
+
+  # 2. Integration tests — fires when a story touches two or more `layers`.
+  integration:
+    command: pnpm --filter @your-scope/api test
+    location: apps/api/test/
+
+  # 3. Smoke run — fires on a new/changed/removed HTTP route, request or
+  #    response shape, or auth gate.
+  smoke:
+    command: pnpm smoke
+    file: scripts/smoke.sh
+
+  # 4. API docs — same trigger as the smoke run.
+  api_docs:
+    file: docs/api.md
+
+  # 5. Security check — evaluated on EVERY story, and the outcome recorded
+  #    either way, including "no surface touched".
+  security:
+    # Surfaces this project can actually expose. Remove any that cannot apply;
+    # a surface listed here is one the skill will check a story against.
+    surfaces: [tenant-isolation, authorization, user-input, file-handling,
+               secrets, outbound-fetch, dependency]
+    # Optional scanner or review command, run IN ADDITION to the surface checks
+    # — never instead of them. Leave null if you have none.
+    command: null
+
+  # 6. Backlog status — flipping the story's marker and appending an evidence
+  #    note. Always applies.
+  backlog_status: true

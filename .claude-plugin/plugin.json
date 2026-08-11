@@ -1,0 +1,20 @@
+{
+  "name": "planwright",
+  "description": "A user-story layer above granular planning. Allocate US-<epic>.<n> stories with observable acceptance criteria, then turn a spec into a story-grouped implementation plan where every task is tagged to a criterion and every story carries a Definition of Done.",
+  "version": "0.1.0",
+  "author": {
+    "name": "sshah"
+  },
+  "homepage": "https://github.com/sshah-tripcart/planwright",
+  "repository": "https://github.com/sshah-tripcart/planwright",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "planning",
+    "user-stories",
+    "backlog",
+    "acceptance-criteria",
+    "definition-of-done",
+    "tdd"
+  ]
+}
