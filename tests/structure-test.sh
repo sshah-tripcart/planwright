@@ -36,6 +36,12 @@ has_text .claude-plugin/marketplace.json '"source": "./"'
 # invariant worth holding is that the two manifests AGREE: Claude Code compares
 # the marketplace entry's version to decide an update exists, so bumping
 # plugin.json alone ships a release nobody can install.
+#
+# All THREE places are compared, not two. marketplace.json carries the version
+# twice — once as the marketplace's own metadata.version, once on the plugin
+# entry — and a bump that misses one leaves the repo contradicting itself while
+# the suite stays green. This repo ships marketplace and plugin as one artifact,
+# so they version together.
 version_report=$(python3 - <<'PY' 2>&1
 import json, re
 try:
@@ -46,18 +52,25 @@ except Exception as exc:
     raise SystemExit(0)
 pv = plugin.get("version")
 entries = [p for p in market.get("plugins", []) if p.get("name") == plugin.get("name")]
+mv = market.get("metadata", {}).get("version")
 if not entries:
     print("NO-ENTRY marketplace.json lists no plugin named %r" % plugin.get("name"))
 elif not isinstance(pv, str) or not re.fullmatch(r"\d+\.\d+\.\d+", pv):
     print("BAD-SEMVER plugin.json version %r" % pv)
-elif entries[0].get("version") != pv:
-    print("MISMATCH plugin.json %s != marketplace entry %s" % (pv, entries[0].get("version")))
 else:
-    print("OK %s" % pv)
+    drift = []
+    if entries[0].get("version") != pv:
+        drift.append("marketplace entry is %s" % entries[0].get("version"))
+    if mv != pv:
+        drift.append("marketplace metadata.version is %s" % mv)
+    if drift:
+        print("MISMATCH plugin.json is %s but %s" % (pv, "; ".join(drift)))
+    else:
+        print("OK %s" % pv)
 PY
 )
 case "$version_report" in
-  "OK "*) ok "manifest versions agree (${version_report#OK })" ;;
+  "OK "*) ok "all three manifest versions agree (${version_report#OK })" ;;
   *)      fail "manifest versions: $version_report" ;;
 esac
 
