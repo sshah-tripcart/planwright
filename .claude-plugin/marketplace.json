@@ -13,7 +13,7 @@
       "name": "planwright",
       "source": "./",
       "description": "Allocate user stories with observable acceptance criteria, then plan against them: story-grouped tasks, per-task AC tags, and a Definition of Done per story.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "workflow",
       "keywords": [

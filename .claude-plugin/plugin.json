@@ -1,7 +1,7 @@
 {
   "name": "planwright",
   "description": "A user-story layer above granular planning. Allocate US-<epic>.<n> stories with observable acceptance criteria, then turn a spec into a story-grouped implementation plan where every task is tagged to a criterion and every story carries a Definition of Done.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "sshah"
   },

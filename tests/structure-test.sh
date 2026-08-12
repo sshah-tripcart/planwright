@@ -27,10 +27,39 @@ echo "== manifests =="
 has_file .claude-plugin/plugin.json
 has_file .claude-plugin/marketplace.json
 has_text .claude-plugin/plugin.json '"name": "planwright"'
-has_text .claude-plugin/plugin.json '"version": "0.1.0"'
 has_text .claude-plugin/plugin.json '"license": "MIT"'
 has_text .claude-plugin/marketplace.json '"name": "planwright-marketplace"'
 has_text .claude-plugin/marketplace.json '"source": "./"'
+
+# Deliberately not a pinned literal. Pinning the version would break on every
+# release and assert only that someone remembered to edit this file. The
+# invariant worth holding is that the two manifests AGREE: Claude Code compares
+# the marketplace entry's version to decide an update exists, so bumping
+# plugin.json alone ships a release nobody can install.
+version_report=$(python3 - <<'PY' 2>&1
+import json, re
+try:
+    plugin = json.load(open(".claude-plugin/plugin.json"))
+    market = json.load(open(".claude-plugin/marketplace.json"))
+except Exception as exc:
+    print("UNPARSEABLE %s" % exc)
+    raise SystemExit(0)
+pv = plugin.get("version")
+entries = [p for p in market.get("plugins", []) if p.get("name") == plugin.get("name")]
+if not entries:
+    print("NO-ENTRY marketplace.json lists no plugin named %r" % plugin.get("name"))
+elif not isinstance(pv, str) or not re.fullmatch(r"\d+\.\d+\.\d+", pv):
+    print("BAD-SEMVER plugin.json version %r" % pv)
+elif entries[0].get("version") != pv:
+    print("MISMATCH plugin.json %s != marketplace entry %s" % (pv, entries[0].get("version")))
+else:
+    print("OK %s" % pv)
+PY
+)
+case "$version_report" in
+  "OK "*) ok "manifest versions agree (${version_report#OK })" ;;
+  *)      fail "manifest versions: $version_report" ;;
+esac
 
 echo "== license =="
 has_file LICENSE
