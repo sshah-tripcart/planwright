@@ -54,6 +54,10 @@ required = [
     "definition_of_done.api_docs.file",
     "definition_of_done.security.surfaces",
     "definition_of_done.security.command",
+]
+# definition_of_done.backlog_status is deliberately absent: requirement #6 is
+# unconditional, so a key for it would be a toggle that toggles nothing.
+forbidden = [
     "definition_of_done.backlog_status",
 ]
 try:
@@ -61,20 +65,27 @@ try:
 except Exception as exc:
     print("UNPARSEABLE %s" % exc)
     raise SystemExit(0)
-missing = []
-for path in required:
+def resolve(path):
     node = doc
     for part in path.split("."):
         if isinstance(node, dict) and part in node:
             node = node[part]
         else:
-            missing.append(path)
-            break
-print("MISSING " + " ".join(missing) if missing else "OK")
+            return False
+    return True
+
+missing = [p for p in required if not resolve(p)]
+present = [p for p in forbidden if resolve(p)]
+if missing:
+    print("MISSING " + " ".join(missing))
+elif present:
+    print("DEAD-KEY " + " ".join(present))
+else:
+    print("OK")
 PY
 )
 if [ "$config_report" = "OK" ]; then
-  ok "templates/planwright.yml parses and has every documented key"
+  ok "templates/planwright.yml parses, has every documented key, and no dead ones"
 else
   fail "templates/planwright.yml: $config_report"
 fi

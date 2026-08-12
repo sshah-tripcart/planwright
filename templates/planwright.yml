@@ -83,5 +83,6 @@ definition_of_done:
     command: null
 
   # 6. Backlog status — flipping the story's marker and appending an evidence
-  #    note. Always applies.
-  backlog_status: true
+  #    note. Unconditional, and deliberately has no key: the backlog is the
+  #    source of truth, so a story is not done until its marker says so. There
+  #    is nothing here to turn off.

@@ -54,7 +54,7 @@ definition_of_done:
     surfaces: [tenant-isolation, authorization, user-input, file-handling,
                secrets, outbound-fetch, dependency]
     command: null
-  backlog_status: true
+  # Requirement 6 (backlog status) is unconditional and has no key.
 ```
 
 ## The two skills
