@@ -147,6 +147,26 @@ skill in `obra/superpowers` v6.2.0, MIT licensed, Copyright (c) 2025 Jesse
 Vincent. It was copied once with attribution. This repository is not a fork and
 tracks no upstream branch.
 
+## Releasing
+
+```
+scripts/release.sh 0.1.2              # bump, verify, commit, tag, push, publish
+scripts/release.sh 0.1.2 --dry-run    # print the plan, change nothing
+```
+
+The version lives in three places — `plugin.json`'s `version`, and both
+`metadata.version` and the plugin entry in `marketplace.json` — so it is bumped
+by script rather than by hand. A partial bump leaves the repo contradicting
+itself, and has happened twice.
+
+The script is all-or-nothing: every precondition is checked before a file is
+touched, and the bump is reverted if the suite or `claude plugin validate
+--strict` fails afterwards. Nothing is committed, tagged, or pushed unless
+everything passes.
+
+Releases are history for humans. Claude Code installs by cloning the default
+branch and reading `marketplace.json`, so a missing tag never blocks anyone.
+
 ## Licence
 
 MIT. See [LICENSE](LICENSE).

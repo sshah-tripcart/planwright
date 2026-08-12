@@ -168,6 +168,15 @@ for surface in tenant-isolation authorization user-input file-handling secrets o
   has_text skills/story-plans/SKILL.md "$surface"
 done
 
+echo "== release script =="
+has_file scripts/release.sh
+if [ -x scripts/release.sh ]; then ok "scripts/release.sh is executable"; else fail "scripts/release.sh is not executable"; fi
+# The script exists to bump all three version positions together. If a rewrite
+# ever drops one, this catches it — the same partial-bump failure the version
+# check above guards from the other side.
+has_text scripts/release.sh 'metadata'
+has_text scripts/release.sh 'plugins'
+
 echo "== readme =="
 has_file README.md
 has_text README.md '/plugin marketplace add sshah-tripcart/planwright'
